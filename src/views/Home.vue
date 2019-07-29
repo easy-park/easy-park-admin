@@ -17,10 +17,9 @@
         <a-icon
           class="trigger"
           :type="collapsed ? 'menu-unfold' : 'menu-fold'"
-          @click="()=> collapsed = !collapsed"
-        />
+          @click="()=> collapsed = !collapsed"/>
       </a-layout-header>
-      <a-layout-content>
+      <a-layout-content class="content">
         <router-view></router-view>
       </a-layout-content>
     </a-layout>
@@ -38,7 +37,7 @@ export default {
           key: 'staff',
           icon: 'user',
           text: '员工管理',
-          routeTo: '/'
+          routeTo: '/staff'
         },
         {
           key: 'parkinglot',
@@ -79,5 +78,9 @@ export default {
   height: 32px;
   background: rgba(255,255,255,.2);
   margin: 16px;
+}
+
+.content {
+  padding: 20px;
 }
 </style>

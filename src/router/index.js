@@ -9,7 +9,14 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: () => import('@/views/Home.vue')
+      component: () => import('@/views/Home.vue'),
+      redirect: 'staff',
+      children: [
+        {
+          path: 'staff',
+          component: () => import('@/views/StaffManagement.vue')
+        }
+      ]
     }
   ]
 })
