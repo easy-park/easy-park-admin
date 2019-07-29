@@ -87,7 +87,4 @@ export default {
   margin: 16px;
 }
 
-.content {
-  padding: 20px;
-}
 </style>
