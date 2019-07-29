@@ -14,7 +14,15 @@ export default new Router({
       children: [
         {
           path: 'staff',
-          component: () => import('@/views/StaffManagement.vue')
+          component: () => import('@/views/Staff.vue')
+        },
+        {
+          path: 'clerk',
+          component: () => import('@/views/Clerk.vue')
+        },
+        {
+          path: 'parkinglot',
+          component: () => import('@/views/Parkinglot.vue')
         }
       ]
     }
