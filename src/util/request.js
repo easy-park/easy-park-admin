@@ -5,7 +5,7 @@ import Cookies from 'js-cookie'
 const STATUS_SUCCESS = 200
 
 const instance = axios.create({
-  baseURL: '/manage/',
+  baseURL: '/manager/',
   headers: {
     ContentType: 'application/json'
   }
