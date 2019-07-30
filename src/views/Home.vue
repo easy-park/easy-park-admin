@@ -6,8 +6,7 @@
         theme="dark"
         mode="inline"
         :defaultSelectedKeys="defaultSelectedKeys"
-        @click="handleClick"
-      >
+        @click="handleClick">
         <a-menu-item v-for="item in menuItems" :key="item.key">
           <a-icon :type="item.icon" />
           <span>{{ item.text }}</span>
@@ -19,12 +18,10 @@
         <a-icon
           class="trigger"
           :type="collapsed ? 'menu-unfold' : 'menu-fold'"
-          @click="()=> collapsed = !collapsed"
-        />
+          @click="()=> collapsed = !collapsed"/>
       </a-layout-header>
       <a-layout-content
-        :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
-      >
+        :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }">
         <router-view></router-view>
       </a-layout-content>
     </a-layout>
@@ -33,35 +30,45 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       collapsed: false,
-      defaultSelectedKeys: ["staff"],
+      defaultSelectedKeys: ['staff'],
       menuItems: [
         {
-          key: "staff",
-          icon: "user",
-          text: "员工管理"
+          key: 'staff',
+          icon: 'user',
+          text: '员工管理'
         },
         {
-          key: "parkinglot",
-          icon: "user",
-          text: "停车场管理"
+          key: 'parkinglot',
+          icon: 'car',
+          text: '停车场管理'
         },
         {
-          key: "clerk",
-          icon: "user",
-          text: "停车员管理"
+          key: 'clerk',
+          icon: 'team',
+          text: '停车员管理'
+        },
+        {
+          key: 'order',
+          icon: 'profile',
+          text: '订单管理'
+        },
+        {
+          key: 'dashboard',
+          icon: 'profile',
+          text: '停车场Dashboard'
         }
       ]
-    };
+    }
   },
   methods: {
-    handleClick(item) {
-      this.$router.push("/" + item.key);
+    handleClick (item) {
+      this.$router.push('/' + item.key)
     }
   }
-};
+}
 </script>
 
 <style scoped>

@@ -2,7 +2,7 @@ import { request } from '@/util/request'
 
 export function getOrder () {
   return request({
-    url: '/parkingOrderlist',
+    url: '/parkingorderlist',
     method: 'GET'
   })
 }

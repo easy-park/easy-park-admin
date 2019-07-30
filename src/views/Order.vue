@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="table-operations">
+    <div class="order">
       <a-row :gutter="20">
         <a-col :span="16"></a-col>
         <a-col :span="3">
@@ -19,7 +19,7 @@
         </a-col>
       </a-row>
     </div>
-    <a-table :pagination="pagination" :columns="columns" :dataSource="list" @change="handleChange" :rowKey="record => record.id">
+    <a-table bordered :pagination="pagination" :columns="columns" :dataSource="list" @change="handleChange" :rowKey="record => record.id">
       <span slot="operation" slot-scope="record">
         <a href="javascript:;" v-show="record.status === 1">指派</a>
         <a href="javascript:;" v-show="record.status === 4">提醒</a>
@@ -107,3 +107,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.order {
+  margin-bottom: 16px;
+}
+</style>
