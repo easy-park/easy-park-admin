@@ -56,6 +56,7 @@ export default {
             element.orderStatus = '存取中'
           }
         })
+        this.list = this.sortList(this.list)
       }
     })
   },
@@ -96,6 +97,12 @@ export default {
       console.log('Various parameters', pagination, filters, sorter)
       this.filteredInfo = filters
       this.sortedInfo = sorter
+    },
+    sortList (list) {
+      let firstArray = list.filter(element => element.status === 2 || element.status === 3 || element.status === 5)
+      let middleArray = list.filter(element => element.status === 1 || element.status === 4)
+      let lastArray = list.filter(element => element.status === 6)
+      return firstArray.concat(middleArray, lastArray)
     }
   }
 }
