@@ -1,8 +1,21 @@
 import { request } from '@/util/request'
 
-export function getStaffList () {
+function getStaffList () {
   return request({
     url: '/clerks',
     method: 'GET'
   })
+}
+
+function createStaff (staff) {
+  return request({
+    url: '/employees',
+    method: 'POST',
+    data: staff
+  })
+}
+
+export {
+  getStaffList,
+  createStaff
 }
