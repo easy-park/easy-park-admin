@@ -27,6 +27,10 @@ export default new Router({
         {
           path: 'order',
           component: () => import('@/views/Order.vue')
+        },
+        {
+          path: 'dashboard',
+          component: () => import('@/views/ParkingLotDashboard.vue')
         }
       ]
     }

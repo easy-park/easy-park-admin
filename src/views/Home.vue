@@ -54,6 +54,11 @@ export default {
           key: 'order',
           icon: 'profile',
           text: '订单管理'
+        },
+        {
+          key: 'dashboard',
+          icon: 'profile',
+          text: '停车场Dashboard'
         }
       ]
     }
