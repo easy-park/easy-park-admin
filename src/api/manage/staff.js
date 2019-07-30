@@ -15,7 +15,43 @@ function createStaff (staff) {
   })
 }
 
+function getStaffById (id) {
+  return request({
+    url: '/clerklist',
+    method: 'GET',
+    params: { id }
+  })
+}
+
+function getStaffByName (name) {
+  return request({
+    url: '/clerklist',
+    method: 'GET',
+    params: { name }
+  })
+}
+
+function getStaffByEmail (email) {
+  return request({
+    url: '/clerklist',
+    method: 'GET',
+    params: { email }
+  })
+}
+
+function getStaffByPhone (phone) {
+  return request({
+    url: '/clerklist',
+    method: 'GET',
+    params: { phone }
+  })
+}
+
 export {
   getStaffList,
-  createStaff
+  createStaff,
+  getStaffById,
+  getStaffByName,
+  getStaffByEmail,
+  getStaffByPhone
 }

@@ -7,7 +7,7 @@
         </a-col>
         <a-col :span="11"></a-col>
         <a-col :span="3">
-          <a-select style="width: 120px">
+          <a-select style="width: 120px" v-model="searchMethod">
             <a-select-option key="id" value="id">ID</a-select-option>
             <a-select-option key="name" value="name">姓名</a-select-option>
             <a-select-option key="email" value="email">邮箱</a-select-option>
@@ -15,14 +15,15 @@
           </a-select>
         </a-col>
         <a-col :span="6">
-          <a-input></a-input>
+          <a-input v-model="searchText" @keydown.enter="search"></a-input>
         </a-col>
         <a-col :span="2">
-          <a-button type="primary">搜索</a-button>
+          <a-button type="primary" @click="search">搜索</a-button>
         </a-col>
       </a-row>
     </div>
-    <a-table bordered :columns="columns" :dataSource="list" :rowKey="record => record.id">
+    <a-table bordered :columns="columns" :dataSource="list" :rowKey="(record, index) => `${record.id}-${index}`">
+      <template slot="id" slot-scope="text, record, index">{{ `${record.position}-${index + 1}` }}</template>
       <span slot="operation" slot-scope="text, record">
         <a href="javascript:;" @click="onUpdateClick(text, record)">修改</a>
         <a-divider type="vertical" />
@@ -79,12 +80,13 @@
 </template>
 
 <script>
-import { getStaffList, createStaff } from '@/api/manage/staff'
+import { getStaffList, createStaff, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone } from '@/api/manage/staff'
 import { EMAIL as EMAIL_REGEXP, MOBILE_PHONE as MOBILE_PHONE_REGEXP } from '@/util/regexp'
 
 const columns = [{
   dataIndex: 'id',
-  title: 'Id'
+  title: 'Id',
+  scopedSlots: { customRender: 'id' }
 }, {
   dataIndex: 'name',
   title: '姓名'
@@ -106,7 +108,9 @@ export default {
       confirmLoading: false,
       form: this.$form.createForm(this),
       columns,
-      list: []
+      list: [],
+      searchMethod: '',
+      searchText: ''
     }
   },
   mounted () {
@@ -162,6 +166,29 @@ export default {
     },
     handleCreateCancel () {
       this.createStaffModalVisible = false
+    },
+    search () {
+      switch (this.searchMethod) {
+        case 'id':
+          this.find(getStaffById)
+          break
+        case 'name':
+          this.find(getStaffByName)
+          break
+        case 'email':
+          this.find(getStaffByEmail)
+          break
+        case 'phone':
+          this.find(getStaffByPhone)
+          break
+      }
+    },
+    find (findMethod) {
+      findMethod(this.searchText).then(res => {
+        this.list = res.data
+      }).catch(error => {
+        this.$message.error(error.msg)
+      })
     }
   }
 }
