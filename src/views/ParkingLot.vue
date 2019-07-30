@@ -25,7 +25,7 @@
       </a-row>
     </div>
     <a-table bordered :columns="columns" :dataSource="data" :rowKey="record => record.id">
-      <template v-for="col in ['name', 'capacity']" :slot="col" slot-scope="text, record">
+      <!-- <template v-for="col in ['name', 'capacity']" :slot="col" slot-scope="text, record">
         <div :key="col">
           <a-input
             v-if="editingRecord && editingRecord.id === record.id"
@@ -34,20 +34,36 @@
             @change="e => handleChange(e.target.value, record, col)"></a-input>
           <template v-else>{{ text }}</template>
         </div>
+      </template> -->
+      <template slot="name" slot-scope="text, record">
+        <a-input
+          v-if="editingRecord && editingRecord.id === record.id"
+          style="margin: -5px 0"
+          :value="text"
+          @change="e => handleChange(e.target.value, record, 'name')"></a-input>
+        <template v-else>{{ text }}</template>
+      </template>
+      <template slot="capacity" slot-scope="text, record">
+        <a-input-number
+          v-if="editingRecord && editingRecord.id === record.id"
+          :value="text"
+          :min="1"
+          @change="value => handleChange(value, record, 'capacity')"></a-input-number>
+        <template v-else>{{ text }}</template>
       </template>
       <template slot="operation" slot-scope="text, record">
         <div class='editable-row-operations'>
           <span v-if="editingRecord && editingRecord.id === record.id">
-            <a-button type="primary" @click="() => save(record)" :loading="isEditLoading">保存</a-button>
+            <a @click="() => save(record)">保存</a>
             <a-divider type="vertical" />
-            <a-popconfirm title='确定取消？' @confirm="() => cancel(record)">
+            <a-popconfirm title='确定取消？' @confirm="() => cancel(record)" cancelText="取消" okText="确定">
               <a>取消</a>
             </a-popconfirm>
           </span>
           <span v-else>
             <a @click="() => edit(record)">修改</a>
             <a-divider type="vertical" />
-            <a @click="() => freeze(record)">注销</a>
+            <a @click="() => freezeOrActive(record)" :style="record.status | mapOppositeStatusColor">{{ record.status | mapOppositeStatus }}</a>
           </span>
         </div>
       </template>
@@ -57,6 +73,7 @@
 
 <script>
 import { getParkingLot, updateParkingLot, queryParkingLotsByCapacity, queryParkingLotsByName } from '@/api/manage/parkingLot'
+import { FROZEN, ACTIVE } from '@/api/manage/parking-lot-status'
 
 const columns = [
   {
@@ -88,7 +105,6 @@ export default {
       data: [],
       selectedQueryField: 'name',
       queryText: '',
-      isEditLoading: false,
       firstCapacity: 0,
       secondCapacity: 1,
       isQueryLoading: false
@@ -96,6 +112,14 @@ export default {
   },
   mounted () {
     this.refreshData()
+  },
+  filters: {
+    mapOppositeStatus (status) {
+      return status === FROZEN ? '启用' : '停用'
+    },
+    mapOppositeStatusColor (status) {
+      return status === FROZEN ? {} : { color: 'red' }
+    }
   },
   methods: {
     refreshData () {
@@ -113,17 +137,41 @@ export default {
     edit (record) {
       this.editingRecord = record
     },
-    freeze (record) {
+    freezeOrActive (record) {
+      switch (record.status) {
+        case FROZEN: {
+          const newRecord = Object.assign({}, record, { status: ACTIVE })
+          return this.updateParkingLotStatus(newRecord, '正在启用', '启用成功')
+        }
+        default: {
+          const newRecord = Object.assign({}, record, { status: FROZEN })
+          return this.updateParkingLotStatus(newRecord, '正在停用', '停用成功')
+        }
+      }
+    },
+    updateParkingLotStatus (newRecord, loadingMsg, successMsg) {
+      const finishLoading = this.$message.loading(loadingMsg, 0)
+      return updateParkingLot(newRecord).then(res => {
+        const index = this.data.findIndex(item => res.data.id === item.id)
+        this.$set(this.data, index, res.data)
+        this.$message.success(successMsg)
+      }).catch(err => {
+        this.$message.error(err.msg)
+      }).finally(() => {
+        finishLoading()
+      })
     },
     save (record) {
-      this.isEditLoading = true
+      const finishLoading = this.$message.loading('正在修改', 0)
       const newRecord = Object.assign({}, record, { 'capacity': Number(record.capacity) })
       updateParkingLot(newRecord).then(res => {
+        const index = this.data.findIndex(item => res.data.id === item.id)
+        this.$set(this.data, index, res.data)
         this.$message.success('修改成功')
       }).catch(err => {
         this.$message.error(err.msg)
       }).finally(() => {
-        this.isEditLoading = false
+        finishLoading()
         this.editingRecord = undefined
       })
     },
