@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="table-operations">
+    <div class="parking-lot">
       <a-row :gutter="20">
         <a-col :span="2">
           <a-button type="primary">新建</a-button>
@@ -25,20 +25,9 @@
       </a-row>
     </div>
     <a-table bordered :columns="columns" :dataSource="data" :rowKey="record => record.id">
-      <!-- <template v-for="col in ['name', 'capacity']" :slot="col" slot-scope="text, record">
-        <div :key="col">
-          <a-input
-            v-if="editingRecord && editingRecord.id === record.id"
-            style="margin: -5px 0"
-            :value="text"
-            @change="e => handleChange(e.target.value, record, col)"></a-input>
-          <template v-else>{{ text }}</template>
-        </div>
-      </template> -->
       <template slot="name" slot-scope="text, record">
         <a-input
           v-if="editingRecord && editingRecord.id === record.id"
-          style="margin: -5px 0"
           :value="text"
           @change="e => handleChange(e.target.value, record, 'name')"></a-input>
         <template v-else>{{ text }}</template>
@@ -212,11 +201,7 @@ export default {
 }
 </script>
 <style scoped>
-.table-operations {
+.parking-lot {
   margin-bottom: 16px;
-}
-
-.table-operations > button {
-  margin-right: 8px;
 }
 </style>
