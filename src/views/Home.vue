@@ -5,7 +5,7 @@
       <a-menu
         theme="dark"
         mode="inline"
-        :defaultSelectedKeys="defaultSelectedKeys"
+        :defaultSelectedKeys="defaultSelectedKey"
         @click="handleClick">
         <a-menu-item v-for="item in menuItems" :key="item.key">
           <a-icon :type="item.icon" />
@@ -33,7 +33,6 @@ export default {
   data () {
     return {
       collapsed: false,
-      defaultSelectedKeys: ['staff'],
       menuItems: [
         {
           key: 'staff',
@@ -57,10 +56,16 @@ export default {
         },
         {
           key: 'dashboard',
-          icon: 'profile',
+          icon: 'dashboard',
           text: '停车场Dashboard'
         }
       ]
+    }
+  },
+  computed: {
+    defaultSelectedKey () {
+      const index = this.menuItems.findIndex(item => this.$router.currentRoute.path.indexOf(item.key) >= 0)
+      return [this.menuItems[index].key]
     }
   },
   methods: {
