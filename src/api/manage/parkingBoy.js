@@ -1,5 +1,8 @@
 import { request } from '@/util/request'
 
+const FREE = 0
+const BUSY = 1
+
 function getParkingBoy () {
   return request({
     url: '/parkingBoys/all',
@@ -39,10 +42,30 @@ function selectParkingBoys (params) {
   })
 }
 
+function selectParkingBoyByPhoneNumber (phoneNumber) {
+  return request({
+    url: '/parkingBoys/list',
+    method: 'GET',
+    params: phoneNumber
+  })
+}
+
+function selectParkingBoyById (parkingBoyId) {
+  return request({
+    url: '/parkingBoys/one',
+    method: 'GET',
+    params: parkingBoyId
+  })
+}
+
 export {
   getParkingBoy,
   getAllParkingLotsAndParkingBoy,
   setParkingBoysParkingLots,
   changeParkingBoysParkingLots,
-  selectParkingBoys
+  selectParkingBoys,
+  selectParkingBoyByPhoneNumber,
+  selectParkingBoyById,
+  FREE,
+  BUSY
 }
