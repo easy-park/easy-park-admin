@@ -31,9 +31,18 @@ function changeParkingBoysParkingLots (params) {
   })
 }
 
+function selectParkingBoys (params) {
+  return request({
+    url: '/parkingBoys/list',
+    method: 'GET',
+    params
+  })
+}
+
 export {
   getParkingBoy,
   getAllParkingLotsAndParkingBoy,
   setParkingBoysParkingLots,
-  changeParkingBoysParkingLots
+  changeParkingBoysParkingLots,
+  selectParkingBoys
 }

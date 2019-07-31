@@ -30,12 +30,15 @@ export default {
   mounted () {
     getAllParkingLotsAndParkingBoy(this.record.id).then(res => {
       if (res.status === 200) {
-        console.log(res.data.parkingLots);
         this.targetKeys = res.data.boysParkingLots.map(item => item.id)
         this.parkingLots = res.data.parkingLots.map((item) => {
           item['key'] = item.id
-          item['title'] = item.name
-          item['disabled'] = item.status !== 1 && this.targetKeys.indexOf(item.id) === -1
+          item['title'] = item.status === 2 ? '(' + item.available + ' / ' + item.capacity + ')' + item.name + ' (已分配)' : '(' + item.available + ' / ' + item.capacity + ')' + item.name
+          if (item.status !== 1 && this.targetKeys.indexOf(item.id) === -1) {
+            item['disabled'] = true
+          } else if (item.status !== 1 && this.targetKeys.indexOf(item.id) > -1 && item.available !== item.capacity) {
+            item['disabled'] = true
+          }
           return item
         })
       }
@@ -43,18 +46,24 @@ export default {
   },
   methods: {
     handleChange (nextTargetKeys, direction, moveKeys) {
+      console.log(moveKeys);
+      console.log(this.parkingLots);
       if (direction === 'right') {
-        const setList = this.parkingLots.filter(item => moveKeys.indexOf(item.id) > -1).map(item => parseInt(item.id))
+        const setList = this.parkingLots.filter(item => moveKeys.indexOf(item.id) > -1).map(item => item.id)
+        console.log(setList);
         setParkingBoysParkingLots({ 'list': setList, 'id': parseInt(this.record.id) }).then(res => {
           if (res.status === 200) {
             getAllParkingLotsAndParkingBoy(this.record.id).then(res => {
               if (res.status === 200) {
-                console.log(res.data.parkingLots);
                 this.targetKeys = res.data.boysParkingLots.map(item => item.id)
                 this.parkingLots = res.data.parkingLots.map((item) => {
                   item['key'] = item.id
-                  item['title'] = item.name
-                  item['disabled'] = item.status !== 1 && this.targetKeys.indexOf(item.id) === -1
+                  item['title'] = item.status === 2 ? '(' + item.available + ' / ' + item.capacity + ')' + item.name + ' (已分配)' : '(' + item.available + ' / ' + item.capacity + ')' + item.name
+                  if (item.status !== 1 && this.targetKeys.indexOf(item.id) === -1) {
+                    item['disabled'] = true
+                  } else if (item.status !== 1 && this.targetKeys.indexOf(item.id) > -1 && item.available !== item.capacity) {
+                    item['disabled'] = true
+                  }
                   return item
                 })
               }
@@ -62,17 +71,20 @@ export default {
           }
         })
       } else {
-        const setList = this.parkingLots.filter(item => moveKeys.indexOf(item.id) > -1).map(item => parseInt(item.id))
+        const setList = this.parkingLots.filter(item => moveKeys.indexOf(item.id) > -1).map(item => item.id)
         changeParkingBoysParkingLots({ 'list': setList, 'id': parseInt(this.record.id) }).then(res => {
           if (res.status === 200) {
             getAllParkingLotsAndParkingBoy(this.record.id).then(res => {
               if (res.status === 200) {
-                console.log(res.data.parkingLots);
                 this.targetKeys = res.data.boysParkingLots.map(item => item.id)
                 this.parkingLots = res.data.parkingLots.map((item) => {
                   item['key'] = item.id
-                  item['title'] = item.name
-                  item['disabled'] = item.status !== 1 && this.targetKeys.indexOf(item.id) === -1
+                  item['title'] = item.status === 2 ? '(' + item.available + ' / ' + item.capacity + ')' + item.name + ' (已分配)' : '(' + item.available + ' / ' + item.capacity + ')' + item.name
+                  if (item.status !== 1 && this.targetKeys.indexOf(item.id) === -1) {
+                    item['disabled'] = true
+                  } else if (item.status !== 1 && this.targetKeys.indexOf(item.id) > -1 && item.available !== item.capacity) {
+                    item['disabled'] = true
+                  }
                   return item
                 })
               }
