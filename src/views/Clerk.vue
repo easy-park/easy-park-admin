@@ -4,12 +4,11 @@
       <a-row :gutter="20">
         <a-col :span="2">
         </a-col>
-        <a-col :span="14"></a-col>
+        <a-col :span="12"></a-col>
         <a-col :span="3">
           <a-select defaultValue="id" style="width: 120px" v-model="select" >
             <a-select-option key="id" value="id">ID</a-select-option>
             <a-select-option key="name" value="name">姓名</a-select-option>
-            <a-select-option key="email" value="email">Email</a-select-option>
             <a-select-option key="phone" value="phone">电话号码</a-select-option>
           </a-select>
         </a-col>
@@ -19,13 +18,14 @@
         <a-col :span="2">
           <a-button type="primary" @click="handleSelect">搜索</a-button>
         </a-col>
+        <a-col :span="2">
+          <a-button @click="handleReset">重置</a-button>
+        </a-col>
       </a-row>
     </div>
     <a-table :columns="columns" :dataSource="list" :rowKey="record => record.id">
       <span slot="operation" slot-scope="text, record">
         <a-button @click="showModal(record)">修改</a-button>
-        <a-divider type="vertical" />
-        <a-button type="danger" @click="handleDelete">冻结</a-button>
       </span>
     </a-table>
     <a-modal width="600px" v-model="visible" title="停车场管理" @ok="handleOk" :destroyOnClose="true" :maskClosable="false" :footer="null">
@@ -34,7 +34,7 @@
   </div>
 </template>
 <script>
-import { getParkingBoy } from '@/api/manage/parkingBoy'
+import { getParkingBoy, selectParkingBoys, selectParkingBoyByPhoneNumber, selectParkingBoyById } from '@/api/manage/parkingBoy'
 import ParkingLotTransfer from '@/components/ParkingLotTransfer'
 export default {
   data () {
@@ -96,23 +96,36 @@ export default {
       this.record = record
       this.visible = true
     },
-    handleDelete () {
-      this.$confirm({
-        title: '确认冻结该账户？',
-        content: '该账户将不可使用',
-        okText: 'Yes',
-        okType: 'danger',
-        cancelText: 'No',
-        onOk () {
-          console.log('OK')
-        },
-        onCancel () {
-          console.log('Cancel')
+    handleSelect () {
+      if (this.select === 'name') {
+        selectParkingBoys({ 'name': this.input }).then(res => {
+          if (res.status === 200) {
+            this.list = res.data
+          }
+        })
+      }
+      if (this.select === 'phone') {
+        selectParkingBoyByPhoneNumber({ 'phoneNumber': this.input }).then(res => {
+          if (res.status === 200) {
+            this.list = res.data
+          }
+        })
+      }
+      if (this.select === 'id') {
+        selectParkingBoyById({ 'parkingBoyId': this.input }).then(res => {
+          this.list = []
+          this.list[0] = res.data
+        }).catch(error => {
+          this.$message.success(error.msg)
+        })
+      }
+    },
+    handleReset () {
+      getParkingBoy().then(res => {
+        if (res.status === 200) {
+          this.list = res.data
         }
       })
-    },
-    handleSelect () {
-      console.log(this.select, this.input)
     }
   }
 }

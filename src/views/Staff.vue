@@ -43,7 +43,7 @@
         <template v-else>
           <a href="javascript:;" @click="onUpdateClick(record)">修改</a>
           <a-divider type="vertical" />
-          <a href="javascript:;" @click="onFreezeClick(text, record)">冻结</a>
+          <a href="javascript:;" @click="onFreezeClick(record)" v-show="record.status !== ADMIN">{{ getBtnName(record.status) }}</a>
         </template>
       </span>
     </a-table>
@@ -97,8 +97,9 @@
 </template>
 
 <script>
-import { getStaffList, createStaff, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone, update } from '@/api/manage/staff'
+import { getStaffList, createStaff, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone, update, updateStatus } from '@/api/manage/staff'
 import { EMAIL as EMAIL_REGEXP, MOBILE_PHONE as MOBILE_PHONE_REGEXP } from '@/util/regexp'
+import { FREEZ, ADMIN, ACTIVE } from '@/api/manage/clerk-status'
 
 const columns = [{
   dataIndex: 'id',
@@ -130,7 +131,8 @@ export default {
       list: [],
       searchMethod: '',
       searchText: '',
-      editRecord: undefined
+      editRecord: undefined,
+      ADMIN: ADMIN
     }
   },
   mounted () {
@@ -167,8 +169,37 @@ export default {
     onUpdateClick (record) {
       this.editRecord = record
     },
-    onFreezeClick () {
-      // 点击 冻结 按钮的逻辑
+    onFreezeClick (record) {
+      if (record.status === FREEZ) {
+        const newRecord = Object.assign(record)
+        newRecord.status = ACTIVE
+        updateStatus(newRecord).then(res => {
+          const index = this.list.findIndex(item => this.generegeKey(record) === this.generegeKey(item))
+          this.$set(this.list, index, res.data)
+          this.$message.success('解冻成功')
+          this.refreshData()
+        })
+        return
+      }
+      if (record.status !== FREEZ) {
+        this.$confirm({
+          title: '确认冻结该账户？',
+          content: '该账户将不可使用',
+          okText: 'Yes',
+          okType: 'danger',
+          cancelText: 'No',
+          onOk: () => {
+            const newRecord = Object.assign(record)
+            newRecord.status = FREEZ
+            updateStatus(newRecord).then(res => {
+              const index = this.list.findIndex(item => this.generegeKey(record) === this.generegeKey(item))
+              this.$set(this.list, index, res.data)
+              this.$message.success('冻结成功')
+              this.refreshData()
+            })
+          }
+        })
+      }
     },
     handleCreateOk () {
       this.form.validateFields((errors, values) => {
@@ -186,6 +217,14 @@ export default {
           })
         }
       })
+    },
+    getBtnName (status) {
+      if (status !== FREEZ) {
+        return '冻结'
+      }
+      if (status === FREEZ) {
+        return '解冻'
+      }
     },
     handleCreateCancel () {
       this.createStaffModalVisible = false

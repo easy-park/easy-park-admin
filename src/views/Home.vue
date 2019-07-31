@@ -5,7 +5,7 @@
       <a-menu
         theme="dark"
         mode="inline"
-        :defaultSelectedKeys="defaultSelectedKeys"
+        :defaultSelectedKeys="defaultSelectedKey"
         @click="handleClick">
         <a-menu-item v-for="item in menus" :key="item.path">
           <a-icon :type="item.icon" />
@@ -36,7 +36,7 @@ export default {
   data () {
     return {
       collapsed: false,
-      defaultSelectedKeys: ['staff'],
+      defaultSelectedKey: [],
       menus: []
     }
   },
@@ -56,6 +56,10 @@ export default {
       })
     }).reduce((menus, menu) => menus.concat(menu), [])
     this.menus = menus
+    const index = menus.findIndex(item => this.$router.currentRoute.path.indexOf(item.path) >= 0)
+    if (index >= 0) {
+      this.defaultSelectedKey = [menus[index].path]
+    }
   },
   methods: {
     handleClick (item) {

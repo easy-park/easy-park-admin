@@ -55,6 +55,14 @@ function update (staff) {
   })
 }
 
+function updateStatus (staff) {
+  return request({
+    url: '/clerklist',
+    method: 'PUT',
+    data: staff
+  })
+}
+
 export {
   getStaffList,
   createStaff,
@@ -62,5 +70,6 @@ export {
   getStaffByName,
   getStaffByEmail,
   getStaffByPhone,
-  update
+  update,
+  updateStatus
 }

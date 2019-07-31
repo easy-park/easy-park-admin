@@ -36,7 +36,7 @@
         <a-input-number
           v-if="editingRecord && editingRecord.id === record.id"
           :value="text"
-          :min="1"
+          :min="record.available"
           @change="value => handleChange(value, record, 'capacity')"></a-input-number>
         <template v-else>{{ text }}</template>
       </template>
