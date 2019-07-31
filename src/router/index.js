@@ -5,7 +5,7 @@ Vue.use(Router)
 
 const dynamicRoutes = [
   {
-    path: '/',
+    path: '/home',
     component: () => import('@/views/Home.vue'),
     redirect: '/parkinglot',
     children: [
@@ -46,8 +46,9 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/login',
+      path: '/',
       component: () => import('@/views/user/UserLayout.vue'),
+      redirect: '/login',
       children: [
         {
           path: '/login',

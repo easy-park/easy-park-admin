@@ -94,7 +94,7 @@ export default {
           const loginParams = this.collectLoginInfo(values)
           login(loginParams).then((res) => {
             this.$message.success('登录成功')
-            this.$router.push('/')
+            this.$router.push('/home')
           }).catch(err => {
             switch (err.status) {
               case VERIFICATION_FAILED.STATUS:
