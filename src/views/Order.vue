@@ -33,16 +33,25 @@
       <template slot="orderType" slot-scope="record">{{ getOrderType(record.status) }}</template>
       <template slot="orderStatus" slot-scope="record">{{ getOrderStatus(record.status) }}</template>
       <span slot="operation" slot-scope="record">
-        <a href="javascript:;" v-show="record.status === 1">指派</a>
-        <a href="javascript:;" v-show="record.status === 4">提醒</a>
+        <a href="javascript:;" v-show="record.status === 1" @click="showParkingBoys(record)">指派</a>
+        <a href="javascript:;" v-show="record.status === 4" @click="remind(record)">提醒</a>
+        <a-modal title="停车员" v-model="show" :mask=false :footer="null">
+          <a-row>姓名：{{ parkingBoy.name }}</a-row>
+          <a-row>邮箱：{{ parkingBoy.email }}</a-row>
+          <a-row>电话：{{ parkingBoy.phoneNumber }}</a-row>
+        </a-modal>
+        <a-modal title="选择停车员" v-model="visible" @ok="assign()" width="700px" :mask=false>
+          <ParkingBoys v-on:getParkingBoyId="parkingBoyId = $event" :parkingBoys = "parkingBoys"/>
+        </a-modal>
       </span>
     </a-table>
   </div>
 </template>
 
 <script>
-import { getOrder, getOrdersByType, getOrdersByStatus, getOrdersByCarNumber } from '@/api/manage/order'
-
+import { getOrder, getOrdersByType, getOrdersByStatus, getOrdersByCarNumber, assignOrder } from '@/api/manage/order'
+import { getParkingBoy } from '@/api/manage/parkingBoy'
+import ParkingBoys from './ParkingBoys'
 const columns = [
   {
     title: 'ID',
@@ -71,6 +80,9 @@ const columns = [
   }
 ]
 export default {
+  components: {
+    ParkingBoys
+  },
   data () {
     return {
       filteredInfo: null,
@@ -80,17 +92,29 @@ export default {
       columns,
       carNumber: '',
       selectType: '',
-      selectStatus: ''
+      selectStatus: '',
+      visible: false,
+      order: {},
+      parkingBoys: [],
+      parkingBoyId: 0,
+      show: false,
+      parkingBoy: {}
     }
   },
   beforeMount () {
-    getOrder().then(res => {
-      if (res.status === 200) {
-        this.list = this.sortList(res.data)
-      }
+    this.loadOrders()
+    getParkingBoy().then(res => {
+      this.parkingBoys = res.data
     })
   },
   methods: {
+    loadOrders () {
+      getOrder().then(res => {
+        if (res.status === 200) {
+          this.list = this.sortList(res.data)
+        }
+      })
+    },
     getOrderType (status) {
       if (status > 3) {
         return '取车'
@@ -131,6 +155,25 @@ export default {
       getOrdersByStatus(this.selectStatus).then(res => {
         this.list = res.data
       })
+    },
+    showParkingBoys (record) {
+      this.visible = true
+      this.order = record
+    },
+    assign () {
+      assignOrder(this.order.id, this.parkingBoyId).then(res => {
+        this.$message.success('指派成功！')
+        this.loadOrders()
+      }).catch(error => {
+        this.$message.error(error.msg)
+      }).finally(() => {
+        this.visible = false
+        this.parkingBoyId = 0
+      })
+    },
+    remind (record) {
+      this.show = true
+      this.parkingBoy = record.parkingBoy
     }
   }
 }

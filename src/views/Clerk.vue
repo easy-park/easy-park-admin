@@ -9,7 +9,6 @@
           <a-select defaultValue="id" style="width: 120px" v-model="select" >
             <a-select-option key="id" value="id">ID</a-select-option>
             <a-select-option key="name" value="name">姓名</a-select-option>
-            <a-select-option key="email" value="email">Email</a-select-option>
             <a-select-option key="phone" value="phone">电话号码</a-select-option>
           </a-select>
         </a-col>
@@ -35,7 +34,7 @@
   </div>
 </template>
 <script>
-import { getParkingBoy, selectParkingBoys } from '@/api/manage/parkingBoy'
+import { getParkingBoy, selectParkingBoys, selectParkingBoyByPhoneNumber, selectParkingBoyById } from '@/api/manage/parkingBoy'
 import ParkingLotTransfer from '@/components/ParkingLotTransfer'
 export default {
   data () {
@@ -97,21 +96,6 @@ export default {
       this.record = record
       this.visible = true
     },
-    handleDelete () {
-      this.$confirm({
-        title: '确认冻结该账户？',
-        content: '该账户将不可使用',
-        okText: 'Yes',
-        okType: 'danger',
-        cancelText: 'No',
-        onOk () {
-          console.log('OK')
-        },
-        onCancel () {
-          console.log('Cancel')
-        }
-      })
-    },
     handleSelect () {
       if (this.select === 'name') {
         selectParkingBoys({ 'name': this.input }).then(res => {
@@ -120,7 +104,21 @@ export default {
           }
         })
       }
-      console.log(this.select, this.input)
+      if (this.select === 'phone') {
+        selectParkingBoyByPhoneNumber({ 'phoneNumber': this.input }).then(res => {
+          if (res.status === 200) {
+            this.list = res.data
+          }
+        })
+      }
+      if (this.select === 'id') {
+        selectParkingBoyById({ 'parkingBoyId': this.input }).then(res => {
+          this.list = []
+          this.list[0] = res.data
+        }).catch(error => {
+          this.$message.success(error.msg)
+        })
+      }
     },
     handleReset () {
       getParkingBoy().then(res => {
