@@ -30,7 +30,7 @@ export default {
   mounted () {
     getAllParkingLotsAndParkingBoy(this.record.id).then(res => {
       if (res.status === 200) {
-        console.log(res.data.parkingLots);
+        console.log(res.data.parkingLots)
         this.targetKeys = res.data.boysParkingLots.map(item => item.id)
         this.parkingLots = res.data.parkingLots.map((item) => {
           item['key'] = item.id
@@ -49,7 +49,7 @@ export default {
           if (res.status === 200) {
             getAllParkingLotsAndParkingBoy(this.record.id).then(res => {
               if (res.status === 200) {
-                console.log(res.data.parkingLots);
+                console.log(res.data.parkingLots)
                 this.targetKeys = res.data.boysParkingLots.map(item => item.id)
                 this.parkingLots = res.data.parkingLots.map((item) => {
                   item['key'] = item.id
@@ -67,7 +67,7 @@ export default {
           if (res.status === 200) {
             getAllParkingLotsAndParkingBoy(this.record.id).then(res => {
               if (res.status === 200) {
-                console.log(res.data.parkingLots);
+                console.log(res.data.parkingLots)
                 this.targetKeys = res.data.boysParkingLots.map(item => item.id)
                 this.parkingLots = res.data.parkingLots.map((item) => {
                   item['key'] = item.id

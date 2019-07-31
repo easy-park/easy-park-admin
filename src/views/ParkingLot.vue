@@ -51,8 +51,10 @@
           </span>
           <span v-else>
             <a @click="() => edit(record)">修改</a>
-            <a-divider type="vertical" />
-            <a @click="() => freezeOrActive(record)" :style="record.status | mapOppositeStatusColor">{{ record.status | mapOppositeStatus }}</a>
+            <template v-if="record.available >= record.capacity">
+              <a-divider type="vertical" />
+              <a @click="() => freezeOrActive(record)" :style="record.status | mapOppositeStatusColor">{{ record.status | mapOppositeStatus }}</a>
+            </template>
           </span>
         </div>
       </template>
