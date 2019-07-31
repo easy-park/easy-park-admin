@@ -43,7 +43,7 @@
         <template v-else>
           <a href="javascript:;" @click="onUpdateClick(record)">修改</a>
           <a-divider type="vertical" />
-          <a href="javascript:;" @click="onFreezeClick(record)">{{ getBtnName(record.status) }}</a>
+          <a href="javascript:;" @click="onFreezeClick(record)" v-show="record.status !== ADMIN">{{ getBtnName(record.status) }}</a>
         </template>
       </span>
     </a-table>
@@ -99,7 +99,7 @@
 <script>
 import { getStaffList, createStaff, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone, update, updateStatus } from '@/api/manage/staff'
 import { EMAIL as EMAIL_REGEXP, MOBILE_PHONE as MOBILE_PHONE_REGEXP } from '@/util/regexp'
-import { FROZEN, ACTIVE } from '@/api/manage/parking-lot-status'
+import { FREEZ, ADMIN, ACTIVE } from '@/api/manage/clerk-status'
 
 const columns = [{
   dataIndex: 'id',
@@ -131,7 +131,8 @@ export default {
       list: [],
       searchMethod: '',
       searchText: '',
-      editRecord: undefined
+      editRecord: undefined,
+      ADMIN: ADMIN
     }
   },
   mounted () {
@@ -169,7 +170,7 @@ export default {
       this.editRecord = record
     },
     onFreezeClick (record) {
-      if (record.status === FROZEN) {
+      if (record.status === FREEZ) {
         const newRecord = Object.assign(record)
         newRecord.status = ACTIVE
         updateStatus(newRecord).then(res => {
@@ -180,7 +181,7 @@ export default {
         })
         return
       }
-      if (record.status === ACTIVE) {
+      if (record.status !== FREEZ) {
         this.$confirm({
           title: '确认冻结该账户？',
           content: '该账户将不可使用',
@@ -189,7 +190,7 @@ export default {
           cancelText: 'No',
           onOk: () => {
             const newRecord = Object.assign(record)
-            newRecord.status = FROZEN
+            newRecord.status = FREEZ
             updateStatus(newRecord).then(res => {
               const index = this.list.findIndex(item => this.generegeKey(record) === this.generegeKey(item))
               this.$set(this.list, index, res.data)
@@ -218,10 +219,10 @@ export default {
       })
     },
     getBtnName (status) {
-      if (status === ACTIVE) {
+      if (status !== FREEZ) {
         return '冻结'
       }
-      if (status === FROZEN) {
+      if (status === FREEZ) {
         return '解冻'
       }
     },
