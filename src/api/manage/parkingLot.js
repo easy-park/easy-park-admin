@@ -31,9 +31,18 @@ function queryParkingLotsByName (name) {
   })
 }
 
+function createParkingLot (data) {
+  return request({
+    url: '/parking_lots',
+    method: 'POST',
+    data
+  })
+}
+
 export {
   getParkingLot,
   updateParkingLot,
   queryParkingLotsByCapacity,
-  queryParkingLotsByName
+  queryParkingLotsByName,
+  createParkingLot
 }

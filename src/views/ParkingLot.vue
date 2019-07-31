@@ -3,7 +3,7 @@
     <div class="parking-lot">
       <a-row :gutter="20">
         <a-col :span="2">
-          <a-button type="primary">新建</a-button>
+          <a-button type="primary" @click="onCreateClick">新建</a-button>
         </a-col>
         <a-col :span="11"></a-col>
         <a-col :span="3">
@@ -59,11 +59,48 @@
         </div>
       </template>
     </a-table>
+    <a-modal
+      title="新建停车场"
+      :visible="isModalVisible"
+      :closable="false"
+      @ok="handleCreateOk"
+      okText="新建"
+      :confirmLoading="confirmLoading"
+      cancelText="取消"
+      @cancel="handleCreateCancel">
+      <a-form :form="form">
+        <a-form-item label="停车场名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+          <a-input
+            v-decorator="[
+              'name',
+              { rules: [{ required: true, message: '请输入停车场名称' }] }
+            ]"></a-input>
+        </a-form-item>
+        <a-form-item label="容量" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+          <a-input-number
+            :min="1"
+            v-decorator="[
+              'capacity',
+              {
+                initialValue: 1,
+                rules: [{ required: true, message: '请输入停车场容量' }]
+              }
+            ]"
+            ></a-input-number>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script>
-import { getParkingLot, updateParkingLot, queryParkingLotsByCapacity, queryParkingLotsByName } from '@/api/manage/parkingLot'
+import {
+  getParkingLot,
+  updateParkingLot,
+  queryParkingLotsByCapacity,
+  queryParkingLotsByName,
+  createParkingLot
+} from '@/api/manage/parkingLot'
 import { FROZEN, ACTIVE } from '@/api/manage/parking-lot-status'
 
 const columns = [
@@ -98,7 +135,10 @@ export default {
       queryText: '',
       firstCapacity: 0,
       secondCapacity: 1,
-      isQueryLoading: false
+      isQueryLoading: false,
+      form: this.$form.createForm(this),
+      isModalVisible: false,
+      confirmLoading: false
     }
   },
   mounted () {
@@ -198,6 +238,29 @@ export default {
       }).finally(() => {
         this.isQueryLoading = false
       })
+    },
+    onCreateClick () {
+      this.isModalVisible = true
+    },
+    handleCreateOk () {
+      this.form.validateFields((errors, values) => {
+        if (!errors) {
+          this.confirmLoading = true
+          createParkingLot({ ...values, available: values.capacity }).then(res => {
+            return this.refreshData()
+          }).then(res => {
+            this.isModalVisible = false
+            this.$message.info('创建成功')
+          }).catch(err => {
+            this.$message.error(err.message)
+          }).finally(() => {
+            this.confirmLoading = false
+          })
+        }
+      })
+    },
+    handleCreateCancel () {
+      this.isModalVisible = false
     }
   }
 }
