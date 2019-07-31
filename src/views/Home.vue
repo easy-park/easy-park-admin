@@ -7,9 +7,9 @@
         mode="inline"
         :defaultSelectedKeys="defaultSelectedKeys"
         @click="handleClick">
-        <a-menu-item v-for="item in menuItems" :key="item.key">
+        <a-menu-item v-for="item in menus" :key="item.path">
           <a-icon :type="item.icon" />
-          <span>{{ item.text }}</span>
+          <span>{{ item.title }}</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
@@ -29,43 +29,37 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { STORE } from '@/store'
+
 export default {
   data () {
     return {
       collapsed: false,
       defaultSelectedKeys: ['staff'],
-      menuItems: [
-        {
-          key: 'staff',
-          icon: 'user',
-          text: '员工管理'
-        },
-        {
-          key: 'parkinglot',
-          icon: 'car',
-          text: '停车场管理'
-        },
-        {
-          key: 'clerk',
-          icon: 'team',
-          text: '停车员管理'
-        },
-        {
-          key: 'order',
-          icon: 'profile',
-          text: '订单管理'
-        },
-        {
-          key: 'dashboard',
-          icon: 'profile',
-          text: '停车场Dashboard'
-        }
-      ]
+      menus: []
     }
+  },
+  computed: {
+    ...mapState({
+      dynamicRoutes: STORE.DYNAMIC_ROUTES
+    })
+  },
+  beforeMount () {
+    const menus = this.dynamicRoutes.map(route => {
+      return (route.children || []).map(childRoute => {
+        return {
+          path: childRoute.path,
+          title: childRoute.meta.title,
+          icon: childRoute.meta.icon
+        }
+      })
+    }).reduce((menus, menu) => menus.concat(menu), [])
+    this.menus = menus
   },
   methods: {
     handleClick (item) {
-      this.$router.push('/' + item.key)
+      this.$router.push(item.key)
     }
   }
 }

@@ -114,9 +114,13 @@ const columns = [
     scopedSlots: { customRender: 'name' }
   },
   {
-    title: '容量',
+    title: '总容量',
     dataIndex: 'capacity',
     scopedSlots: { customRender: 'capacity' }
+  },
+  {
+    title: '可用容量',
+    dataIndex: 'available'
   },
   {
     title: '操作',
@@ -194,7 +198,7 @@ export default {
     },
     save (record) {
       const finishLoading = this.$message.loading('正在修改', 0)
-      const newRecord = Object.assign({}, record, { 'capacity': Number(record.capacity) })
+      const newRecord = Object.assign({}, record, { capacity: Number(record.capacity) })
       updateParkingLot(newRecord).then(res => {
         const index = this.data.findIndex(item => res.data.id === item.id)
         this.$set(this.data, index, res.data)
