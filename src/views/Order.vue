@@ -33,15 +33,34 @@
       <template slot="orderType" slot-scope="record">{{ getOrderType(record.status) }}</template>
       <template slot="orderStatus" slot-scope="record">{{ getOrderStatus(record.status) }}</template>
       <span slot="operation" slot-scope="record">
-        <a href="javascript:;" v-show="record.status === 1">指派</a>
+        <a href="javascript:;" v-show="record.status === 1" @click="showParkingBoys(record)">指派</a>
         <a href="javascript:;" v-show="record.status === 4">提醒</a>
+        <a-modal title="选择停车员" v-model="visible" @ok="assign()" width="700px" :mask=false>
+          <a-row style="margin-bottom: 10px; text-align: center">
+            <a-col :span="2"></a-col>
+            <a-col :span="4">姓名</a-col>
+            <a-col :span="6">电话</a-col>
+            <a-col :span="8">邮箱</a-col>
+            <a-col :span="4">状态</a-col>
+          </a-row>
+          <a-radio-group v-model="parkingBoyId" class="modal-list">
+            <a-row style="height: 40px" v-for="(item,index) in parkingBoys" :key="index">
+              <a-col :span="2"><a-radio name="parkingBoy" :key="item.id" :value="item.id"></a-radio></a-col>
+              <a-col :span="4">{{ item.name }}</a-col>
+              <a-col :span="6">{{ item.phoneNumber }}</a-col>
+              <a-col :span="8">{{ item.email }}</a-col>
+              <a-col :span="4">{{ getStatus(item.status) }}</a-col>
+            </a-row>
+          </a-radio-group>
+        </a-modal>
       </span>
     </a-table>
   </div>
 </template>
 
 <script>
-import { getOrder, getOrdersByType, getOrdersByStatus, getOrdersByCarNumber } from '@/api/manage/order'
+import { getOrder, getOrdersByType, getOrdersByStatus, getOrdersByCarNumber, assignOrder } from '@/api/manage/order'
+import { getParkingBoy, FREE } from '@/api/manage/parkingBoy'
 
 const columns = [
   {
@@ -80,7 +99,11 @@ export default {
       columns,
       carNumber: '',
       selectType: '',
-      selectStatus: ''
+      selectStatus: '',
+      visible: false,
+      order: {},
+      parkingBoys: [],
+      parkingBoyId: 0
     }
   },
   beforeMount () {
@@ -89,6 +112,9 @@ export default {
         this.list = this.sortList(res.data)
       }
     })
+    getParkingBoy().then(res => {
+      this.parkingBoys = res.data
+    })
   },
   methods: {
     getOrderType (status) {
@@ -96,6 +122,13 @@ export default {
         return '取车'
       } else {
         return '存车'
+      }
+    },
+    getStatus (status) {
+      if (status === FREE) {
+        return '空闲'
+      } else {
+        return '忙碌'
       }
     },
     getOrderStatus (status) {
@@ -131,6 +164,15 @@ export default {
       getOrdersByStatus(this.selectStatus).then(res => {
         this.list = res.data
       })
+    },
+    showParkingBoys (record) {
+      this.visible = true
+      this.order = record
+    },
+    assign () {
+      assignOrder(this.order.id, this.parkingBoyId).then(res => {
+        this.$message.success('指派成功！')
+      })
     }
   }
 }
@@ -139,5 +181,11 @@ export default {
 <style scoped>
 .order {
   margin-bottom: 16px;
+}
+.modal-list {
+  max-height: 40vh;
+  overflow: scroll;
+  width: 100%;
+  text-align: center
 }
 </style>
