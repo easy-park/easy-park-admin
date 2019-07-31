@@ -94,7 +94,6 @@ export default {
   },
   methods: {
     handleChange (pagination, filters, sorter) {
-      console.log('Various parameters', pagination, filters, sorter)
       this.filteredInfo = filters
       this.sortedInfo = sorter
     },

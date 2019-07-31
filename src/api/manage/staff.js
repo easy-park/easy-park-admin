@@ -47,11 +47,20 @@ function getStaffByPhone (phone) {
   })
 }
 
+function update (staff) {
+  return request({
+    url: '/clerks',
+    method: 'PUT',
+    data: staff
+  })
+}
+
 export {
   getStaffList,
   createStaff,
   getStaffById,
   getStaffByName,
   getStaffByEmail,
-  getStaffByPhone
+  getStaffByPhone,
+  update
 }
