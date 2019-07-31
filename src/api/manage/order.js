@@ -31,7 +31,7 @@ export function getOrdersByStatus (status) {
   })
 }
 
-export function assignOrder (parkingBoyId, parkingOrderId) {
+export function assignOrder (parkingOrderId, parkingBoyId) {
   return request({
     url: '/parkingorderlist',
     method: 'GET',
