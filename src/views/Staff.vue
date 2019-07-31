@@ -7,7 +7,7 @@
         </a-col>
         <a-col :span="11"></a-col>
         <a-col :span="3">
-          <a-select style="width: 120px">
+          <a-select style="width: 120px" v-model="searchMethod">
             <a-select-option key="id" value="id">ID</a-select-option>
             <a-select-option key="name" value="name">姓名</a-select-option>
             <a-select-option key="email" value="email">邮箱</a-select-option>
@@ -15,18 +15,36 @@
           </a-select>
         </a-col>
         <a-col :span="6">
-          <a-input></a-input>
+          <a-input v-model="searchText" @keydown.enter="search"></a-input>
         </a-col>
         <a-col :span="2">
-          <a-button type="primary">搜索</a-button>
+          <a-button type="primary" @click="search">搜索</a-button>
         </a-col>
       </a-row>
     </div>
-    <a-table bordered :columns="columns" :dataSource="list" :rowKey="record => record.id">
+    <a-table bordered :columns="columns" :dataSource="list" :rowKey="generegeKey">
+      <template slot="id" slot-scope="text, record">{{ generegeKey(record) }}</template>
+      <template slot="email" slot-scope="text, record">
+        <a-input v-if="editRecord && generegeKey(editRecord) === generegeKey(record)"
+        :value="text" @change="e => handleChange(e.target.value, record, 'email')"></a-input>
+        <template v-else>{{ text }}</template>
+      </template>
+      <template slot="phone" slot-scope="text, record">
+        <a-input v-if="editRecord && generegeKey(editRecord) === generegeKey(record)"
+        :value="text" @change="e => handleChange(e.target.value, record, 'phoneNumber')"></a-input>
+        <template v-else>{{ text }}</template>
+      </template>
       <span slot="operation" slot-scope="text, record">
-        <a href="javascript:;" @click="onUpdateClick(text, record)">修改</a>
-        <a-divider type="vertical" />
-        <a href="javascript:;" @click="onFreezeClick(text, record)">冻结</a>
+        <template v-if="editRecord && generegeKey(editRecord) === generegeKey(record)">
+          <a href="javascript:;" @click="save(record)">保存</a>
+          <a-divider type="vertical" />
+          <a href="javascript:;" @click="cancel(record)">取消</a>
+        </template>
+        <template v-else>
+          <a href="javascript:;" @click="onUpdateClick(record)">修改</a>
+          <a-divider type="vertical" />
+          <a href="javascript:;" @click="onFreezeClick(text, record)">冻结</a>
+        </template>
       </span>
     </a-table>
     <a-modal
@@ -79,21 +97,24 @@
 </template>
 
 <script>
-import { getStaffList, createStaff } from '@/api/manage/staff'
+import { getStaffList, createStaff, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone, update } from '@/api/manage/staff'
 import { EMAIL as EMAIL_REGEXP, MOBILE_PHONE as MOBILE_PHONE_REGEXP } from '@/util/regexp'
 
 const columns = [{
   dataIndex: 'id',
-  title: 'Id'
+  title: 'Id',
+  scopedSlots: { customRender: 'id' }
 }, {
   dataIndex: 'name',
   title: '姓名'
 }, {
   dataIndex: 'email',
-  title: '邮箱'
+  title: '邮箱',
+  scopedSlots: { customRender: 'email' }
 }, {
   title: '电话号码',
-  dataIndex: 'phoneNumber'
+  dataIndex: 'phoneNumber',
+  scopedSlots: { customRender: 'phone' }
 }, {
   title: '操作',
   scopedSlots: { customRender: 'operation' }
@@ -106,13 +127,19 @@ export default {
       confirmLoading: false,
       form: this.$form.createForm(this),
       columns,
-      list: []
+      list: [],
+      searchMethod: '',
+      searchText: '',
+      editRecord: undefined
     }
   },
   mounted () {
     this.refreshData()
   },
   methods: {
+    generegeKey (record) {
+      return `${record.position}-${record.id}`
+    },
     refreshData () {
       return getStaffList().then(res => {
         this.list = res.data
@@ -137,8 +164,8 @@ export default {
     onCreateClick () {
       this.createStaffModalVisible = true
     },
-    onUpdateClick () {
-      // 点击 修改 按钮的逻辑
+    onUpdateClick (record) {
+      this.editRecord = record
     },
     onFreezeClick () {
       // 点击 冻结 按钮的逻辑
@@ -162,6 +189,50 @@ export default {
     },
     handleCreateCancel () {
       this.createStaffModalVisible = false
+    },
+    search () {
+      switch (this.searchMethod) {
+        case 'id':
+          this.find(getStaffById)
+          break
+        case 'name':
+          this.find(getStaffByName)
+          break
+        case 'email':
+          this.find(getStaffByEmail)
+          break
+        case 'phone':
+          this.find(getStaffByPhone)
+          break
+      }
+    },
+    find (findMethod) {
+      findMethod(this.searchText).then(res => {
+        this.list = res.data
+      }).catch(error => {
+        this.$message.error(error.msg)
+      })
+    },
+    cancel (record) {
+      const index = this.list.findIndex(item => this.generegeKey(record) === this.generegeKey(item))
+      this.$set(this.list, index, this.editRecord)
+      this.editRecord = undefined
+    },
+    save (record) {
+      update(record).then(res => {
+        const index = this.list.findIndex(item => this.generegeKey(res.data) === this.generegeKey(item))
+        this.$set(this.list, index, res.data)
+        this.$message.success('修改成功')
+      }).catch(err => {
+        this.$message.error(err.msg)
+      }).finally(() => {
+        this.editRecord = undefined
+      })
+    },
+    handleChange (value, record, column) {
+      const index = this.list.findIndex(item => this.generegeKey(record) === this.generegeKey(item))
+      const newRecord = Object.assign({}, record, { [column]: value })
+      this.$set(this.list, index, newRecord)
     }
   }
 }
