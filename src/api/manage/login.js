@@ -21,9 +21,11 @@ function login (data) {
 }
 
 const VERIFICATION_FAILED = new Status(400, '用户名或密码错误')
+const FROZEN_ACCOUNT = new Status(700, '账号已被冻结')
 
 export {
   login,
   loadManagerProfile,
-  VERIFICATION_FAILED
+  VERIFICATION_FAILED,
+  FROZEN_ACCOUNT
 }

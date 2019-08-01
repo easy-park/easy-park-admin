@@ -62,7 +62,7 @@
 import { EMAIL as EMAIL_REGEXP, MOBILE_PHONE as MOBOILE_PHONE_REGEXP } from '@/util/regexp'
 import { mapActions } from 'vuex'
 import { ACTIONS } from '@/store'
-import { VERIFICATION_FAILED } from '@/api/manage/login'
+import { VERIFICATION_FAILED, FROZEN_ACCOUNT } from '@/api/manage/login'
 import { UNKNOWN_ERROR } from '@/api/status'
 
 export default {
@@ -99,6 +99,9 @@ export default {
             switch (err.status) {
               case VERIFICATION_FAILED.STATUS:
                 this.$message.error(VERIFICATION_FAILED.MESSAGE)
+                break
+              case FROZEN_ACCOUNT.STATUS:
+                this.$message.error(FROZEN_ACCOUNT.MESSAGE)
                 break
               default:
                 this.$message.error(UNKNOWN_ERROR.MESSAGE)

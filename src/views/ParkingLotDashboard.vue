@@ -27,8 +27,8 @@
             </span>
             <br/>
             <br/>
-            <span style="font-size: x-large;">
-              <a-icon type="user" />{{item.parkingBoy!==null ? "停车员："+item.parkingBoy.name : "尚未分配"}}
+            <span style="font-size: 20px;">
+              <a-icon type="user" />{{item.parkingBoy!==null ? " 停车员："+item.parkingBoy.name : " 尚未分配"}}
             </span>
           </a-col>
         </a-row>
