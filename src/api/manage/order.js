@@ -1,4 +1,5 @@
 import { request } from '@/util/request'
+import { sendMessage } from './websocket'
 
 export function getOrder () {
   return request({
@@ -36,5 +37,8 @@ export function assignOrder (parkingOrderId, parkingBoyId) {
     url: '/parkingorderlist',
     method: 'GET',
     params: { parkingOrderId, parkingBoyId }
+  }).then(res => {
+    sendMessage()
+    return res
   })
 }

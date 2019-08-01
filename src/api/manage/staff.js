@@ -63,6 +63,14 @@ function updateStatus (staff) {
   })
 }
 
+function assignPosition (staff) {
+  return request({
+    url: '/employees',
+    method: 'PUT',
+    data: staff
+  })
+}
+
 export {
   getStaffList,
   createStaff,
@@ -71,5 +79,6 @@ export {
   getStaffByEmail,
   getStaffByPhone,
   update,
-  updateStatus
+  updateStatus,
+  assignPosition
 }

@@ -42,8 +42,13 @@
         </template>
         <template v-else>
           <a href="javascript:;" @click="onUpdateClick(record)">修改</a>
-          <a-divider type="vertical" />
+          <a-divider type="vertical" v-show="record.status !== ADMIN"/>
           <a href="javascript:;" @click="onFreezeClick(record)" v-show="record.status !== ADMIN">{{ getBtnName(record.status) }}</a>
+          <a-select style="width: 120px; float: right" @change="assignPosition($event, record)">
+            <a-select-option value="Admin">管理员</a-select-option>
+            <a-select-option value="ParkingBoy">停车员</a-select-option>
+            <a-select-option value="Manage">经理</a-select-option>
+          </a-select>
         </template>
       </span>
     </a-table>
@@ -97,7 +102,7 @@
 </template>
 
 <script>
-import { getStaffList, createStaff, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone, update, updateStatus } from '@/api/manage/staff'
+import { getStaffList, createStaff, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone, update, updateStatus, assignPosition } from '@/api/manage/staff'
 import { EMAIL as EMAIL_REGEXP, MOBILE_PHONE as MOBILE_PHONE_REGEXP } from '@/util/regexp'
 import { FREEZ, ADMIN, ACTIVE } from '@/api/manage/clerk-status'
 
@@ -272,6 +277,20 @@ export default {
       const index = this.list.findIndex(item => this.generegeKey(record) === this.generegeKey(item))
       const newRecord = Object.assign({}, record, { [column]: value })
       this.$set(this.list, index, newRecord)
+    },
+    assignPosition (value, record) {
+      let staff = { id: record.id, originPosition: 'Employee', newPosition: value }
+      if (record.position !== 'Employee') {
+        staff.originPosition = record.position
+      }
+      assignPosition(staff).then(res => {
+        const staff = res.data
+        const index = this.list.findIndex(item => this.generegeKey(record) === this.generegeKey(item))
+        this.$set(this.list, index, staff)
+        this.$message.success('分配成功！')
+      }).catch(error => {
+        this.$message.error(error.msg)
+      })
     }
   }
 }
