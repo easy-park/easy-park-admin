@@ -17,27 +17,24 @@ const dynamicRoutes = [
       {
         path: '/parkinglot',
         component: () => import('@/views/ParkingLot.vue'),
-        meta: { title: '停车场管理', icon: 'car', roles: [ 'admin', 'manager' ] }
+        meta: { title: '停车场管理', icon: 'car' }
       },
       {
         path: '/clerk',
         component: () => import('@/views/Clerk.vue'),
-        meta: { title: '停车员管理', icon: 'team', roles: [ 'admin', 'manager' ] }
+        meta: { title: '停车员管理', icon: 'team' }
       },
       {
         path: '/order',
         component: () => import('@/views/Order.vue'),
-        meta: { title: '订单管理', icon: 'profile', roles: [ 'admin', 'manager' ] }
+        meta: { title: '订单管理', icon: 'profile' }
       },
       {
         path: '/dashboard',
         component: () => import('@/views/ParkingLotDashboard.vue'),
-        meta: { title: '停车场 Dashboard', icon: 'dashboard', roles: [ 'admin', 'manager' ] }
+        meta: { title: '停车场 Dashboard', icon: 'dashboard' }
       }
     ]
-  },
-  {
-    path: '*', redirect: '/login', hidden: true
   }
 ]
 
@@ -55,6 +52,13 @@ const router = new Router({
           component: () => import('@/views/user/Login.vue')
         }
       ]
+    },
+    {
+      path: '/404',
+      component: () => import('@/views/exception/ExceptionPage')
+    },
+    {
+      path: '*', redirect: '/404', hidden: true
     }
   ]
 })

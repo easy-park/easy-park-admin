@@ -6,10 +6,10 @@
         </a-col>
         <a-col :span="12"></a-col>
         <a-col :span="3">
-          <a-select defaultValue="id" style="width: 120px" v-model="select" >
-            <a-select-option key="id" value="id">ID</a-select-option>
-            <a-select-option key="name" value="name">姓名</a-select-option>
-            <a-select-option key="phone" value="phone">电话号码</a-select-option>
+          <a-select style="width: 120px" v-model="select">
+            <a-select-option value="id">ID</a-select-option>
+            <a-select-option value="name">姓名</a-select-option>
+            <a-select-option value="phone">电话号码</a-select-option>
           </a-select>
         </a-col>
         <a-col :span="3">
@@ -41,7 +41,7 @@ export default {
     return {
       visible: false,
       list: [],
-      select: '',
+      select: 'id',
       input: '',
       record: {}
     }
