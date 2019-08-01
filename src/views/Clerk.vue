@@ -25,7 +25,7 @@
     </div>
     <a-table :columns="columns" :dataSource="list" :rowKey="record => record.id">
       <span slot="operation" slot-scope="text, record">
-        <a-button @click="showModal(record)">修改</a-button>
+        <a-button @click="showModal(record)" type="primary">分配停车场</a-button>
       </span>
     </a-table>
     <a-modal width="600px" v-model="visible" title="停车场管理" @ok="handleOk" :destroyOnClose="true" :maskClosable="false" :footer="null">

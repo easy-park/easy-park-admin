@@ -4,10 +4,14 @@
     :dataSource="list"
   >
     <a-list-item slot="renderItem" slot-scope="item">
-      <a-card :title="item.name">
+      <div>
+      <a-card :title="item.name" hoverable>
         <a-row>
           <a-col :lg="12" :md="24">
-            <span v-if="item.available/item.capacity === 1">
+            <span v-if="item.status === 0">
+              <a-progress type="circle" :percent="100" :format="() => '已冻结'" strokeColor="grey" status="normal"/>
+            </span>
+            <span v-else-if="item.available/item.capacity === 1">
               <a-progress type="circle" :percent="0"/>
             </span>
             <span v-else-if="item.available/item.capacity === 0">
@@ -24,6 +28,7 @@
           </a-col>
         </a-row>
       </a-card>
+      </div>
     </a-list-item>
   </a-list>
 </template>
