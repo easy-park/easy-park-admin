@@ -46,11 +46,8 @@ export default {
   },
   methods: {
     handleChange (nextTargetKeys, direction, moveKeys) {
-      console.log(moveKeys);
-      console.log(this.parkingLots);
       if (direction === 'right') {
         const setList = this.parkingLots.filter(item => moveKeys.indexOf(item.id) > -1).map(item => item.id)
-        console.log(setList);
         setParkingBoysParkingLots({ 'list': setList, 'id': parseInt(this.record.id) }).then(res => {
           if (res.status === 200) {
             getAllParkingLotsAndParkingBoy(this.record.id).then(res => {

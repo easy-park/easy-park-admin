@@ -28,7 +28,7 @@
         <a-button @click="showModal(record)" type="primary">分配停车场</a-button>
       </span>
     </a-table>
-    <a-modal width="600px" v-model="visible" title="停车场管理" @ok="handleOk" :destroyOnClose="true" :maskClosable="false" :footer="null">
+    <a-modal width="600px" v-model="visible" title="停车场管理" :destroyOnClose="true" :maskClosable="false" :footer="null">
       <ParkingLotTransfer :record="record"/>
     </a-modal>
   </div>
@@ -89,9 +89,6 @@ export default {
     }
   },
   methods: {
-    handleOk (e) {
-      console.log(e)
-    },
     showModal (record) {
       this.record = record
       this.visible = true

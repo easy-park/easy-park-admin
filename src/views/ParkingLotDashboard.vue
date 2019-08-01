@@ -44,9 +44,8 @@ export default {
   },
   mounted () {
     getParkingDashboard().then(res => {
-      console.log(res);
       if (res.status === 200) {
-        this.list = res.data;
+        this.list = res.data
       }
     })
   }
