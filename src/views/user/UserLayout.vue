@@ -3,7 +3,6 @@
     <div class="top">
       <div class="header">
         <a href="/">
-          <img src="~@/assets/logo.svg" class="logo" alt="logo">
           <span class="title">Easy Park</span>
         </a>
       </div>
