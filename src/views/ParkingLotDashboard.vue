@@ -22,6 +22,11 @@
             </span>
           </a-col>
           <a-col :lg="12" :md="24">
+            <span style="font-size: medium;">
+              剩余容量：{{item.available}} / 总容量：{{item.capacity}}
+            </span>
+            <br/>
+            <br/>
             <span style="font-size: x-large;">
               <a-icon type="user" />{{item.parkingBoy!==null ? "停车员："+item.parkingBoy.name : "尚未分配"}}
             </span>

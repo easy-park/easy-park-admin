@@ -3,7 +3,7 @@
     <div class="table-operations">
       <a-row :gutter="20">
         <a-col :span="2">
-          <a-button type="primary" @click="onCreateClick">新建</a-button>
+          <a-button type="primary" @click="createStaffModalVisible = true">新建</a-button>
         </a-col>
         <a-col :span="11"></a-col>
         <a-col :span="3">
@@ -41,7 +41,7 @@
           <a href="javascript:;" @click="cancel(record)">取消</a>
         </template>
         <template v-else>
-          <a href="javascript:;" @click="onUpdateClick(record)">修改</a>
+          <a href="javascript:;" @click="editRecord = record">修改</a>
           <a-divider type="vertical" v-show="record.status !== ADMIN"/>
           <a href="javascript:;" @click="onFreezeClick(record)" v-show="record.status !== ADMIN">{{ getBtnName(record.status) }}</a>
           <a-select style="width: 120px; float: right" @change="assignPosition($event, record)">
@@ -52,59 +52,14 @@
         </template>
       </span>
     </a-table>
-    <a-modal
-      title="新建员工"
-      :visible="createStaffModalVisible"
-      :closable="false"
-      @ok="handleCreateOk"
-      okText="新建"
-      :confirmLoading="confirmLoading"
-      cancelText="取消"
-      @cancel="handleCreateCancel">
-      <a-form :form="form">
-        <a-form-item label="用户名" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-          <a-input
-            v-decorator="[
-              'username',
-              {rules: [{ required: true, message: '请输入员工登录用户名' }]}
-            ]"></a-input>
-        </a-form-item>
-        <a-form-item label="姓名" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-          <a-input
-            v-decorator="[
-              'name',
-              {rules: [{ required: true, message: '请输入员工姓名' }]}
-            ]"></a-input>
-        </a-form-item>
-        <a-form-item label="邮箱" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-          <a-input
-            v-decorator="[
-              'email',
-              {rules: [
-                { required: true, message: '请输入员工邮箱' },
-                { required: true, message: '邮箱格式错误', validator: validateEmail }
-              ]}
-            ]"></a-input>
-        </a-form-item>
-        <a-form-item label="电话" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-          <a-input
-            v-decorator="[
-              'phoneNumber',
-              {rules: [
-                { required: true, message: '请输入员工电话' },
-                { required: true, message: '电话格式错误', validator: validateMobilePhone }
-              ]}
-            ]"></a-input>
-        </a-form-item>
-      </a-form>
-    </a-modal>
+    <AddClerk :createStaffModalVisible="createStaffModalVisible" @update="createStaffModalVisible = $event"/>
   </div>
 </template>
 
 <script>
-import { getStaffList, createStaff, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone, update, updateStatus, assignPosition } from '@/api/manage/staff'
-import { EMAIL as EMAIL_REGEXP, MOBILE_PHONE as MOBILE_PHONE_REGEXP } from '@/util/regexp'
+import { getStaffList, getStaffById, getStaffByName, getStaffByEmail, getStaffByPhone, update, updateStatus, assignPosition } from '@/api/manage/staff'
 import { FREEZ, ADMIN, ACTIVE } from '@/api/manage/clerk-status'
+import AddClerk from './AddClerk'
 
 const columns = [{
   dataIndex: 'id',
@@ -127,10 +82,10 @@ const columns = [{
 }]
 
 export default {
+  components: { AddClerk },
   data () {
     return {
       createStaffModalVisible: false,
-      confirmLoading: false,
       form: this.$form.createForm(this),
       columns,
       list: [],
@@ -153,26 +108,6 @@ export default {
       }).catch(err => {
         this.$message.error(err.msg)
       })
-    },
-    validateEmail (rule, value, callback) {
-      if (value && !new RegExp(EMAIL_REGEXP).test(value)) {
-        callback(rule.message)
-        return
-      }
-      callback()
-    },
-    validateMobilePhone (rule, value, callback) {
-      if (value && !new RegExp(MOBILE_PHONE_REGEXP).test(value)) {
-        callback(rule.message)
-        return
-      }
-      callback()
-    },
-    onCreateClick () {
-      this.createStaffModalVisible = true
-    },
-    onUpdateClick (record) {
-      this.editRecord = record
     },
     onFreezeClick (record) {
       if (record.status === FREEZ) {
@@ -206,23 +141,6 @@ export default {
         })
       }
     },
-    handleCreateOk () {
-      this.form.validateFields((errors, values) => {
-        if (!errors) {
-          this.confirmLoading = true
-          createStaff(values).then(res => {
-            return this.refreshData()
-          }).then(res => {
-            this.createStaffModalVisible = false
-            this.$message.info('创建成功')
-          }).catch(err => {
-            this.$message.error(err.message)
-          }).finally(() => {
-            this.confirmLoading = false
-          })
-        }
-      })
-    },
     getBtnName (status) {
       if (status !== FREEZ) {
         return '冻结'
@@ -230,9 +148,6 @@ export default {
       if (status === FREEZ) {
         return '解冻'
       }
-    },
-    handleCreateCancel () {
-      this.createStaffModalVisible = false
     },
     search () {
       switch (this.searchMethod) {
