@@ -1,25 +1,20 @@
 <template>
   <div>
     <div class="parking-lot">
-      <a-row :gutter="20">
-        <a-col :span="2">
+      <a-row :gutter="20" type="flex" justify="space-between">
+        <a-col>
           <a-button type="primary" @click="onCreateClick">新建</a-button>
         </a-col>
-        <a-col :span="11"></a-col>
-        <a-col :span="3">
-          <a-select style="width: 100%" v-model="selectedQueryField">
+        <a-col style="display: flex; flex-flow: row nowrap; justify-content: space-between; min-width: 400px;">
+          <a-select v-model="selectedQueryField">
             <a-select-option value="name">名字</a-select-option>
             <a-select-option value="capacity">容量</a-select-option>
           </a-select>
-        </a-col>
-        <a-col :span="6">
-          <a-input v-if="selectedQueryField === 'name'" v-model="queryText"></a-input>
-          <template v-else-if="selectedQueryField === 'capacity'">
+          <a-input v-if="selectedQueryField === 'name'" v-model="queryText" style="margin: 0 10px;"></a-input>
+          <a-row v-else-if="selectedQueryField === 'capacity'">
             <a-input-number :min="0" v-model="firstCapacity"></a-input-number>
             <a-input-number :min="1" v-model="secondCapacity"></a-input-number>
-          </template>
-        </a-col>
-        <a-col :span="2">
+          </a-row>
           <a-button type="primary" @click="onQueryClick" :loading="isQueryLoading">搜索</a-button>
         </a-col>
       </a-row>
@@ -36,7 +31,7 @@
         <a-input-number
           v-if="editingRecord && editingRecord.id === record.id"
           :value="text"
-          :min="record.available"
+          :min="record.capacity - record.available"
           @change="value => handleChange(value, record, 'capacity')"></a-input-number>
         <template v-else>{{ text }}</template>
       </template>
