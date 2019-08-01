@@ -18,7 +18,7 @@
               <a-progress type="circle" :percent="100" :format="() => '已满'" status="exception" />
             </span>
             <span v-else>
-              <a-progress type="circle" :percent="item.available/item.capacity*100" />
+              <a-progress type="circle" :percent="parseInt(item.available/item.capacity*100)" />
             </span>
           </a-col>
           <a-col :lg="12" :md="24">
